@@ -3,7 +3,8 @@ require 'sinatra/assetpack'
 require_relative 'config.rb'
 
 class ChatterApp < Sinatra::Base
-  extend Sinatra::AssetPack
+  
+  register Sinatra::AssetPack
 
   assets do
     serve '/js', from: 'assets/javascripts'
