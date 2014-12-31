@@ -1,23 +1,9 @@
- $(function() {
-    $(window).unload(function(event) {
-      $.ajax({
-        type: 'POST',
-        data: { user: localStorage.username },
-        url: '/remove_user',
-        async: false
-      });
-      localStorage.clear();
-    });
- });
-
 var MainContainer = React.createClass({
   getInitialState: function() {
     return({ username: localStorage.username, users: [] })
   },
 
   render: function() {
-    //Get Online Users for each refresh
-    this.getOnlineUsers();
     if (this.state.username) {
       return (
         <div id="container">
@@ -54,7 +40,25 @@ var MainContainer = React.createClass({
     });
   },
 
+  bindEvents: function() {
+    var _this = this;
+    $(window).unload(function(event) {
+      $.ajax({
+        type: 'POST',
+        data: { user: localStorage.username },
+        url: '/remove_user',
+        async: false
+      });
+      localStorage.clear();
+      _this.username = null;
+    });
+  },
+
   componentDidMount: function() {
+    //Get Online Users for each refresh
+    this.getOnlineUsers();
+    this.bindEvents();
+
     var pusher = new Pusher('bfc4c00a003c45623df2'),
         channel = pusher.subscribe('chat')
         _this = this;

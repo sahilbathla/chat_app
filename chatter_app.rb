@@ -27,6 +27,7 @@ class ChatterApp < Sinatra::Base
   end
 
   post '/add_user' do
+    @online_users = [] unless Pusher.get('/channels/chat')[:occupied]
     online_users << params[:user] unless online_users.include?(params[:user])
 
     Pusher['chat'].trigger('users_change', {
@@ -46,6 +47,10 @@ class ChatterApp < Sinatra::Base
 
   get '/online_users' do
     json online_users
+  end
+
+  get '/channel_info' do
+    Pusher.get('/channels/chat')[:occupied]
   end
 
   get '/' do
