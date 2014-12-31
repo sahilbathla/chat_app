@@ -3,7 +3,8 @@
       $.ajax({
         type: 'POST',
         data: { user: localStorage.username },
-        url: '/remove_user'
+        url: '/remove_user',
+        async: false
       });
       localStorage.clear();
     });
