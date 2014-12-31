@@ -5,7 +5,7 @@ var CommentForm = React.createClass({
       var _this = this;
       $.ajax({
         type: 'POST',
-        data: $(_this.getDOMNode()).serialize(),
+        data: $(_this.getDOMNode()).serialize() + '&username=' + localStorage.username,
         url: '/new_message'
       }).success(function() {
         _this.refs.chatText.getDOMNode().value = '';

@@ -1,8 +1,17 @@
 require 'sinatra'
 require 'sinatra/assetpack'
+require "sinatra/json"
+
 require_relative 'config.rb'
 
 class ChatterApp < Sinatra::Base
+  helpers Sinatra::JSON
+  attr_reader :online_users
+
+  def initialize
+    @online_users = []
+    super
+  end
   
   register Sinatra::AssetPack
 
@@ -12,11 +21,31 @@ class ChatterApp < Sinatra::Base
   end
 
   post '/new_message' do
-    Pusher.url = "http://bfc4c00a003c45623df2:b514db97fbd9b19bafb1@api.pusherapp.com/apps/101488"
-
     Pusher['chat'].trigger('new_message', {
-      message: "Guest: #{ params[:chat] }"
+      message: "#{ params[:username] }: #{ params[:chat] }"
     })
+  end
+
+  post '/add_user' do
+    online_users << params[:user] unless online_users.include?(params[:user])
+
+    Pusher['chat'].trigger('users_change', {
+      message: json(online_users)
+    })
+    json({ status: 200, response:  { message: 'Added User' }})
+  end
+
+  post '/remove_user' do
+    online_users.delete params[:user]
+
+    Pusher['chat'].trigger('users_change', {
+      message: json(online_users)
+    })
+    json({ status: 200, response:  { message: 'Removed User' }})
+  end
+
+  get '/online_users' do
+    json online_users
   end
 
   get '/' do
