@@ -50,7 +50,7 @@ class ChatterApp < Sinatra::Base
   end
 
   get '/channel_info' do
-    Pusher.get('/channels/chat')
+    json Pusher.get('/channels/chat')
   end
 
   get '/' do
